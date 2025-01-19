@@ -6,6 +6,7 @@ import theme from './styles/theme';
 import Login from './components/Auth/Login';
 import SignUp from './components/Auth/SignUp';
 import ContactList from './components/Contact/ContactList';
+import { ContactProvider } from './context/ContactContext';
 import '@fontsource/poppins';
 
 // Rota protegida
@@ -25,39 +26,42 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <Router>
-          <Routes>
-            {/* Página inicial - Login (rota pública) */}
-            <Route
-              path="/"
-              element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              }
-            />
+        <ContactProvider>
+          <Router>
+            <Routes>
+              {/* Página inicial - Login (rota pública) */}
+              <Route
+                path="/"
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                }
+              />
 
-            {/* Cadastro (rota pública) */}
-            <Route
-              path="/signup"
-              element={
-                <PublicRoute>
-                  <SignUp />
-                </PublicRoute>
-              }
-            />
+              {/* Cadastro (rota pública) */}
+              <Route
+                path="/signup"
+                element={
+                  <PublicRoute>
+                    <SignUp />
+                  </PublicRoute>
+                }
+              />
 
-            {/* Lista de contatos */}
-            <Route
-              path="/contacts"
-              element={
-                <ProtectedRoute>
-                  <ContactList />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </Router>
+              {/* Lista de contatos */}
+              <Route
+                path="/contacts"
+                element={
+                  <ProtectedRoute>
+                    <ContactList />
+                  </ProtectedRoute>
+                }
+              />
+
+            </Routes>
+          </Router>
+        </ContactProvider>
       </AuthProvider>
     </ThemeProvider>
   );
