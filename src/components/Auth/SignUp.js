@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { TextField, Button, Alert } from '@mui/material';
+import { TextField, Button, Alert, Container, Typography, Box } from '@mui/material';
+import Header from '../Shared/Header';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -20,30 +21,68 @@ const SignUp = () => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Cadastro</h2>
-      <form onSubmit={handleSignUp}>
-        <TextField
-          label="E-mail"
-          fullWidth
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
+    <>
+      <Header></Header>
+      <Container maxWidth="sm" sx={{ mt: 8 }}>
+        <Box
+          sx={{
+            padding: 4,
+            borderRadius: 2,
+            boxShadow: 2,
+            backgroundColor: 'background.box',  
+          }}
+        >
+
+        {/* Luigi GIF */}
+        <img
+          src="/luigi.gif"
+          alt="Luigi"
+          style={{
+            width: '150px',
+            display: 'block',
+            margin: '0 auto 16px',
+          }}
         />
-        <TextField
-          label="Senha"
-          type="password"
-          fullWidth
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          required
-        />
-        <Button type="submit" variant="contained" style={{ marginTop: '16px' }}>
-          Cadastrar
-        </Button>
-        {error && <Alert severity="error" style={{ marginTop: '16px' }}>{error}</Alert>}
-      </form>
-    </div>
+
+          <Typography variant="h2" color="primary" gutterBottom>
+            Crie sua conta
+          </Typography>
+          <Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
+            Comece a usar o Gerenciador de Contatos agora mesmo. <br></br>
+            É rápido, fácil e grátis!
+          </Typography>
+          <form onSubmit={handleSignUp}>
+            <TextField
+              label="E-mail"
+              fullWidth
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Senha"
+              type="password"
+              fullWidth
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+              sx={{ mb: 2 }}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mb: 2 }}
+            >
+              Cadastrar
+            </Button>
+            {error && <Alert severity="error" style={{ marginTop: '16px' }}>{error}</Alert>}
+          </form>
+        </Box>
+      </Container>
+    </>
   );
 };
 
