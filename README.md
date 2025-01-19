@@ -1,70 +1,155 @@
-# Getting Started with Create React App
+# Gerenciador de Contatos
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este projeto é uma aplicação de gerenciamento de contatos desenvolvida como parte do teste técnico para a vaga de desenvolvedor ReactJS PL na UEX Tecnologia. A aplicação segue as diretrizes do desafio proposto e utiliza boas práticas de desenvolvimento para garantir um código limpo, reutilizável e de fácil manutenção.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Funcionalidades Principais
 
-### `npm start`
+1. **Cadastro de Usuário**:
+   - Permite que o usuário se registre com e-mail e senha.
+   - Validação para evitar múltiplos cadastros com o mesmo e-mail.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+2. **Login e Logout**:
+   - Sistema de autenticação com validação de login.
+   - Apenas usuários autenticados podem acessar a lista de contatos.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+3. **Gerenciamento de Contatos**:
+   - Adicionar contatos.
+   - Validação de CPF para evitar duplicidades e garantir conformidade com o algoritmo oficial.
+   - Validação de Nome para evitar nomes muito curtos.
+   - Salvamento de dados no LocalStorage para persistência.
 
-### `npm test`
+4. **Ajuda no Cadastro de Endereços**:
+   - Integração com a API do ViaCEP para preenchimento automático de endereço ao informar o CEP.
+   - Integração com PositionStack para buscar coordenadas.
+   - Mensagens de feedback para erros de CEP inválido ou não encontrado.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+5. **Integração com Google Maps**:
+   - Exibição da localização do contato no mapa.
+   - Marcador personalizado (estilo Luigi).
+   - Estilo escuro do mapa com destaques em verde, harmonizando com o tema Luigi.
 
-### `npm run build`
+6. **Exclusão de Conta**:
+   - Permite que o usuário exclua sua conta, removendo todos os dados do LocalStorage.
+   - Alerta de confirmação para evitar exclusões acidentais.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+7. **Filtro e Ordenação de Contatos**:
+   - Pesquisa por nome ou CPF.
+   - Lista ordenada alfabeticamente por padrão.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Tecnologias Utilizadas
 
-### `npm run eject`
+- **ReactJS**: Biblioteca principal para desenvolvimento da interface.
+- **Material-UI**: Para criação de componentes estilizados seguindo o Material Design V3.
+- **LocalStorage**: Para armazenamento persistente dos dados do usuário e contatos.
+- **Google Maps API**: Para integração do mapa e obtenção de coordenadas geográficas.
+- **PositionStack**: Para obtenção de coordenadas geográficas.
+- **ViaCEP API**: Para busca de endereços a partir do CEP.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Como Rodar o Projeto
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/gerenciador-de-contatos.git
+   ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. Adicione sua chave da Google Maps API e PositionStack no arquivo `ContactList.js`:
+   ```env
+   apiKey: 'AIzaSyAygWrPYHFVzL0zblaZPkRcgIFZkBNAW9...' // Google Maps API
+   access_key: '0f5fdbd711e9fe46085d4b0c239ec384...' // PositionStack
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+4. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm start
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+5. Acesse a aplicação em [http://localhost:3000](http://localhost:3000).
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Estrutura do Projeto
 
-### Analyzing the Bundle Size
+```
+/src
+├── components
+│   ├── Auth
+│   │   ├── Login.js
+│   │   └── SignUp.js
+│   ├── Contact
+│   │   ├── ContactList.js
+│   │   └── ContactForm.js
+│   └── Shared
+│       └── Header.js
+├── context
+│   ├── AuthContext.js
+│   └── ContactContext.js
+├── styles
+│   ├── theme.js
+├── App.js
+└── index.js
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## Prints do Sistema
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 1. Tela de Login
+![Tela de Login](tela-login.png)
 
-### Advanced Configuration
+### 2. Tela de Registro
+![Tela de Registro](tela-registro.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 3. Tela Principal (Lista de Contatos)
+![Tela Principal](tela-contatos.png)
 
-### Deployment
+### 4. Modal de Adicionar Contato
+![Adicionar Contato](modal-contato.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### 5. Contato no Mapa
+![Contato no Mapa](contatos-mapa.png)
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Como o Projeto Atende ao Desafio
+
+### Requisitos Atendidos
+
+- **Cadastro e Login:**
+  - Implementado com validações básicas de e-mail e senha.
+
+- **Gerenciamento de Contatos:**
+  - Inclusão de contatos com validações específicas (CPF, Nome e Endereço).
+  - Persistência no LocalStorage.
+
+- **Ajuda no Preenchimento do Endereço:**
+  - Integração com a API do ViaCEP para busca de endereços.
+  - Integração com PositionStack para buscar coordenadas.
+
+- **Exibição no Google Maps:**
+  - Mapa estilizado e marcador personalizado.
+
+- **Filtro e Ordenação:**
+  - Pesquisa dinâmica por nome ou CPF.
+
+- **Exclusão de Conta:**
+  - Função de exclusão com alerta de confirmação.
+
+---
+
+## Contato
+Se tiver dúvidas ou precisar de mais informações:
+
+- **Email:** luigimatheus@hotmail.com
+- **GitHub:** [https://github.com/luigibreda](https://github.com/luigibreda)
+
