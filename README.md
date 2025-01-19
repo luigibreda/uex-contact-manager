@@ -105,19 +105,19 @@ Este projeto é uma aplicação de gerenciamento de contatos desenvolvida como p
 ## Prints do Sistema
 
 ### 1. Tela de Login
-![Tela de Login](tela-login.png)
+![Tela de Login](public/tela-login.png)
 
 ### 2. Tela de Registro
-![Tela de Registro](tela-registro.png)
+![Tela de Registro](public/tela-registro.png)
 
 ### 3. Tela Principal (Lista de Contatos)
-![Tela Principal](tela-contatos.png)
+![Tela Principal](public/tela-contatos.png)
 
 ### 4. Modal de Adicionar Contato
-![Adicionar Contato](modal-contato.png)
+![Adicionar Contato](public/modal-contato.png)
 
 ### 5. Contato no Mapa
-![Contato no Mapa](contatos-mapa.png)
+![Contato no Mapa](public/contatos-mapa.png)
 
 ---
 
