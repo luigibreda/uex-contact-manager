@@ -135,7 +135,7 @@ const ContactList = ({ google }) => {
     (contact) =>
       contact.name.toLowerCase().includes(search.toLowerCase()) || contact.cpf.includes(search)
   );
-
+  
   return (
     <>
       <Header />
@@ -228,15 +228,15 @@ const ContactList = ({ google }) => {
             </Box>
           )}
 
-          
 
-      {/* Botão Minha Conta */}
-      <Box sx={{ padding: 2, textAlign: 'center' }}>
-        <Button variant="outlined" color="error" onClick={handleDeleteAccount}>
-          Deletar Minha Conta
-        </Button>
-      </Box>
-      
+
+          {/* Botão Minha Conta */}
+          <Box sx={{ padding: 2, textAlign: 'center' }}>
+            <Button variant="outlined" color="error" onClick={handleDeleteAccount}>
+              Deletar Minha Conta
+            </Button>
+          </Box>
+
         </Box>
 
         {/* Mapa */}
@@ -250,8 +250,16 @@ const ContactList = ({ google }) => {
                 lat: selectedContact.latitude || -27.5954,
                 lng: selectedContact.longitude || -48.548,
               }}
+              options={{
+                // styles: mapStyles, // Aplica o estilo personalizado
+                disableDefaultUI: true, // Remove controles padrão para um design mais limpo
+              }}
             >
               <Marker
+                icon={{
+                  url: 'luigi-marker.gif', // URL do ícone personalizado (substitua pelo correto)
+                  scaledSize: new google.maps.Size(40, 40), // Tamanho ajustado do ícone
+                }}
                 position={{
                   lat: selectedContact.latitude || -27.5954,
                   lng: selectedContact.longitude || -48.548,
@@ -336,6 +344,11 @@ const ContactList = ({ google }) => {
             sx={{ mb: 2 }}
             disabled // Campo desabilitado, preenchido automaticamente
           />
+          {cepWarning && (
+            <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+              {cepWarning}
+            </Typography>
+          )}
           {error && (
             <Typography variant="body2" color="error" sx={{ mb: 2 }}>
               {error}
@@ -365,5 +378,5 @@ const ContactList = ({ google }) => {
 };
 
 export default GoogleApiWrapper({
-  apiKey: 'AIzaSyACqcDxAZAlrPqnJ3cl3LHxzleCFFe9h4s',
+  apiKey: 'AIzaSyAygWrPYHFVzL0zblaZPkRcgIFZkBNAW9g',
 })(ContactList);

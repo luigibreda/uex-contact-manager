@@ -39,15 +39,15 @@ export const AuthProvider = ({ children }) => {
     return true;
   };
 
-  const deleteAccount = (password) => {
-    if (password === user.password) {
-      localStorage.removeItem('users');
-      localStorage.removeItem(`contacts_${user.email}`);
-      logout();
-      return true;
-    }
-    return false;
-  };
+  // const deleteAccount = (password) => {
+  //   if (password === user.password) {
+  //     localStorage.removeItem('users');
+  //     localStorage.removeItem(`contacts_${user.email}`);
+  //     logout();
+  //     return true;
+  //   }
+  //   return false;
+  // };
 
   return (
     <AuthContext.Provider value={{ user, login, logout, register }}>
