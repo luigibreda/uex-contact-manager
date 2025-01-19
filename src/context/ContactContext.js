@@ -27,7 +27,14 @@ export const ContactProvider = ({ children }) => {
   };
 
   const deleteContact = (index) => {
-    setContacts((prevContacts) => prevContacts.filter((_, i) => i !== index));
+    const confirmation = window.confirm(
+      'Tem certeza de que deseja excluir o contato?'
+    );
+    if (confirmation) {
+      setContacts((prevContacts) => prevContacts.filter((_, i) => i !== index));
+      alert('Seu contato foi excluída com sucesso.');
+      // window.location.reload(); // Recarrega a página para limpar o estado
+    }
   };
 
   return (
