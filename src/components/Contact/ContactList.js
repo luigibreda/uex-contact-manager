@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Typography, TextField, List, ListItem, ListItemText, Modal } from '@mui/material';
 import { useContact } from '../../context/ContactContext';
-import { SearchOff } from '@mui/icons-material';
+import { SearchOff, Edit, Delete } from '@mui/icons-material';
 import Header from '../Shared/Header';
 import axios from 'axios';
 import { Person } from '@mui/icons-material';
@@ -71,7 +71,7 @@ const ContactList = ({ google }) => {
       setError('Preencha todos os campos obrigatórios.');
       return;
     }
-  
+
     try {
       // Obter latitude e longitude do endereço
       const { data } = await axios.get('https://api.positionstack.com/v1/forward', {
@@ -80,23 +80,23 @@ const ContactList = ({ google }) => {
           query: currentContact.address,
         },
       });
-  
+
       let latitude = null;
       let longitude = null;
-  
+
       if (data?.data && data.data.length > 0) {
         latitude = data.data[0].latitude;
         longitude = data.data[0].longitude;
       } else {
         setError('Coordenadas não encontradas para o endereço. O contato será salvo sem localização.');
       }
-  
+
       if (isEditing) {
         editContact({ ...currentContact, latitude, longitude });
       } else {
         addContact({ ...currentContact, latitude, longitude });
       }
-  
+
       handleCloseModal();
     } catch (err) {
       setError('Erro ao buscar coordenadas para o endereço. Verifique sua conexão ou tente novamente.');
@@ -174,20 +174,23 @@ const ContactList = ({ google }) => {
                       </>
                     }
                   />
-                  <Button
-                    color="primary"
-                    onClick={() => handleOpenModal(contact)} // Edita o contato
-                    sx={{ ml: 2 }}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    color="error"
-                    onClick={() => deleteContact(index)}
-                    sx={{ ml: 2 }}
-                  >
-                    Excluir
-                  </Button>
+
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      color="primary"
+                      onClick={() => handleOpenModal(contact)} 
+                      sx={{ minWidth: 'auto', padding: 1 }}
+                    >
+                      <Edit sx={{ color: 'primary.main' }} />
+                    </Button>
+                    <Button
+                      color="error"
+                      onClick={() => deleteContact(index)} 
+                      sx={{ minWidth: 'auto', padding: 1 }}
+                    >
+                      <Delete sx={{ color: 'error.main' }} />
+                    </Button>
+                  </Box>
                 </ListItem>
               ))}
             </List>
