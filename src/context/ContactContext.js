@@ -20,9 +20,11 @@ export const ContactProvider = ({ children }) => {
     setContacts((prevContacts) => [...prevContacts, newContact]);
   };
 
-  const editContact = (index, updatedContact) => {
+  const editContact = (updatedContact) => {
     setContacts((prevContacts) =>
-      prevContacts.map((contact, i) => (i === index ? updatedContact : contact))
+      prevContacts.map((contact) =>
+        contact.cpf === updatedContact.cpf ? updatedContact : contact
+      )
     );
   };
 

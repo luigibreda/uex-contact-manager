@@ -8,66 +8,42 @@ import { Person } from '@mui/icons-material';
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 
 const ContactList = ({ google }) => {
-  const { contacts, addContact, deleteContact } = useContact();
+  const { contacts, addContact, deleteContact, editContact } = useContact(); // Adicionado updateContact
   const [search, setSearch] = useState('');
   const [openModal, setOpenModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // Controla o estado de edição
   const [selectedContact, setSelectedContact] = useState(null);
-  const [newContact, setNewContact] = useState({
-    name: '',
-    cpf: '',
-    phone: '',
-    cep: '',
-    address: '',
-    latitude: null,
-    longitude: null,
-  });
+  const [currentContact, setCurrentContact] = useState(null); // Dados do contato em edição
   const [error, setError] = useState('');
   const [cepWarning, setCepWarning] = useState('');
 
-  // Função para excluir a conta do usuário
-  const handleDeleteAccount = () => {
-    const confirmation = window.confirm(
-      'Tem certeza de que deseja excluir sua conta? Todos os contatos serão removidos.'
+  // Função para abrir o modal para adição ou edição
+  const handleOpenModal = (contact = null) => {
+    setCurrentContact(
+      contact || {
+        name: '',
+        cpf: '',
+        phone: '',
+        cep: '',
+        address: '',
+        latitude: null,
+        longitude: null,
+      }
     );
-    if (confirmation) {
-      localStorage.clear(); // Remove todos os dados do localStorage (simulando a exclusão da conta)
-      alert('Sua conta foi excluída com sucesso.');
-      window.location.reload(); // Recarrega a página para limpar o estado
-    }
+    setIsEditing(!!contact); // Define se está em modo de edição
+    setOpenModal(true);
   };
 
-  // Função para abrir e fechar o modal
-  const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => {
     setOpenModal(false);
-    setNewContact({ name: '', cpf: '', phone: '', cep: '', address: '' });
+    setCurrentContact(null);
     setError('');
     setCepWarning('');
   };
 
-  // Validação de Nome
-  const validateName = (name) => {
-    if (name.length < 4) {
-      setError('O nome deve ter pelo menos 4 caracteres.');
-      return false;
-    }
-    setError('');
-    return true;
-  };
-
-  // Validação de CPF
-  const validateCPF = (cpf) => {
-    if (cpf.length < 10) {
-      setError('O CPF deve ter pelo menos 11 caracteres.');
-      return false;
-    }
-    setError('');
-    return true;
-  };
-
   // Função para carregar o CEP do ViaCEP
   const handleCEPChange = async (cep) => {
-    setNewContact({ ...newContact, cep });
+    setCurrentContact({ ...currentContact, cep });
     setCepWarning('');
     if (cep.length < 8) {
       setCepWarning('O CEP deve ter 8 caracteres.');
@@ -79,7 +55,7 @@ const ContactList = ({ google }) => {
         setCepWarning('CEP inválido. Verifique e tente novamente.');
         return;
       }
-      setNewContact((prev) => ({
+      setCurrentContact((prev) => ({
         ...prev,
         address: `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`,
       }));
@@ -89,44 +65,41 @@ const ContactList = ({ google }) => {
     }
   };
 
-  // Salvar Novo Contato
-  const handleAddContact = async () => {
-    if (!newContact.name || !newContact.cpf || !newContact.phone || !newContact.address) {
+  // Salvar ou editar contato
+  const handleSaveContact = async () => {
+    if (!currentContact.name || !currentContact.cpf || !currentContact.phone || !currentContact.address) {
       setError('Preencha todos os campos obrigatórios.');
       return;
     }
-
-    if (!validateName(newContact.name)) {
-      return;
-    }
-
-    if (!validateCPF(newContact.cpf)) {
-      return;
-    }
-
-    // Verificar CPF duplicado
-    const isDuplicateCPF = contacts.some((contact) => contact.cpf === newContact.cpf);
-    if (isDuplicateCPF) {
-      setError('Já existe um contato com este CPF.');
-      return;
-    }
+  
     try {
       // Obter latitude e longitude do endereço
       const { data } = await axios.get('https://api.positionstack.com/v1/forward', {
         params: {
           access_key: '0f5fdbd711e9fe46085d4b0c239ec384',
-          query: newContact.address,
+          query: currentContact.address,
         },
       });
-      if (data.data && data.data.length > 0) {
-        const { latitude, longitude } = data.data[0];
-        addContact({ ...newContact, latitude, longitude });
-        handleCloseModal();
+  
+      let latitude = null;
+      let longitude = null;
+  
+      if (data?.data && data.data.length > 0) {
+        latitude = data.data[0].latitude;
+        longitude = data.data[0].longitude;
       } else {
-        setError('Erro ao buscar coordenadas. Verifique o endereço.');
+        setError('Coordenadas não encontradas para o endereço. O contato será salvo sem localização.');
       }
+  
+      if (isEditing) {
+        editContact({ ...currentContact, latitude, longitude });
+      } else {
+        addContact({ ...currentContact, latitude, longitude });
+      }
+  
+      handleCloseModal();
     } catch (err) {
-      setError('Erro ao buscar coordenadas para o endereço.');
+      setError('Erro ao buscar coordenadas para o endereço. Verifique sua conexão ou tente novamente.');
     }
   };
 
@@ -135,7 +108,7 @@ const ContactList = ({ google }) => {
     (contact) =>
       contact.name.toLowerCase().includes(search.toLowerCase()) || contact.cpf.includes(search)
   );
-  
+
   return (
     <>
       <Header />
@@ -158,7 +131,7 @@ const ContactList = ({ google }) => {
             color="primary"
             fullWidth
             sx={{ mb: 2 }}
-            onClick={handleOpenModal}
+            onClick={() => handleOpenModal()}
           >
             Adicionar Novo Contato
           </Button>
@@ -172,51 +145,50 @@ const ContactList = ({ google }) => {
           {/* Verificar se há contatos encontrados */}
           {filteredContacts.length > 0 ? (
             <List>
-              {filteredContacts.map((contact, index) => (<ListItem
-                key={index}
-                sx={{
-                  backgroundColor: 'background.default',
-                  borderRadius: 1,
-                  mb: 1,
-                  boxShadow: 1,
-                }}
-                onClick={() => setSelectedContact(contact)} // Define o contato selecionado para o mapa
-              >
-                <Person sx={{ color: 'primary.main', mr: 2 }} /> {/* Ícone de pessoa */}
-                <ListItemText
-                  primary={
-                    <Typography variant="h6" component="span">
-                      {contact.name}
-                    </Typography>
-                  }
-                  secondary={
-                    <>
-                      <Typography variant="body2" component="span">
-                        <strong>CPF:</strong> {contact.cpf} | <strong>Telefone:</strong> {contact.phone}
-                      </Typography>
-                      <br />
-                      <Typography variant="body2" component="span">
-                        <strong>Endereço:</strong> {contact.address}
-                      </Typography>
-                      <br />
-                      <Typography variant="body2" component="span" color="textSecondary">
-                        <strong>Lat:</strong> {contact.latitude?.toFixed(6)} | <strong>Long:</strong>{' '}
-                        {contact.longitude?.toFixed(6)}
-                      </Typography>
-                    </>
-                  }
-                />
-                <Button
-                  color="error"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Impede que clique no botão afete o mapa
-                    deleteContact(index);
+              {filteredContacts.map((contact, index) => (
+                <ListItem
+                  key={index}
+                  sx={{
+                    backgroundColor: 'background.default',
+                    borderRadius: 1,
+                    mb: 1,
+                    boxShadow: 1,
                   }}
-                  sx={{ ml: 2 }}
                 >
-                  Excluir
-                </Button>
-              </ListItem>
+                  <Person sx={{ color: 'primary.main', mr: 2 }} />
+                  <ListItemText
+                    primary={
+                      <Typography variant="h6" component="span">
+                        {contact.name}
+                      </Typography>
+                    }
+                    secondary={
+                      <>
+                        <Typography variant="body2" component="span">
+                          <strong>CPF:</strong> {contact.cpf} | <strong>Telefone:</strong> {contact.phone}
+                        </Typography>
+                        <br />
+                        <Typography variant="body2" component="span">
+                          <strong>Endereço:</strong> {contact.address}
+                        </Typography>
+                      </>
+                    }
+                  />
+                  <Button
+                    color="primary"
+                    onClick={() => handleOpenModal(contact)} // Edita o contato
+                    sx={{ ml: 2 }}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    color="error"
+                    onClick={() => deleteContact(index)}
+                    sx={{ ml: 2 }}
+                  >
+                    Excluir
+                  </Button>
+                </ListItem>
               ))}
             </List>
           ) : (
@@ -227,16 +199,6 @@ const ContactList = ({ google }) => {
               </Typography>
             </Box>
           )}
-
-
-
-          {/* Botão Minha Conta */}
-          <Box sx={{ padding: 2, textAlign: 'center' }}>
-            <Button variant="outlined" color="error" onClick={handleDeleteAccount}>
-              Deletar Minha Conta
-            </Button>
-          </Box>
-
         </Box>
 
         {/* Mapa */}
@@ -250,16 +212,8 @@ const ContactList = ({ google }) => {
                 lat: selectedContact.latitude || -27.5954,
                 lng: selectedContact.longitude || -48.548,
               }}
-              options={{
-                // styles: mapStyles, // Aplica o estilo personalizado
-                disableDefaultUI: true, // Remove controles padrão para um design mais limpo
-              }}
             >
               <Marker
-                icon={{
-                  url: 'luigi-marker.gif', // URL do ícone personalizado (substitua pelo correto)
-                  scaledSize: new google.maps.Size(40, 40), // Tamanho ajustado do ícone
-                }}
                 position={{
                   lat: selectedContact.latitude || -27.5954,
                   lng: selectedContact.longitude || -48.548,
@@ -274,7 +228,6 @@ const ContactList = ({ google }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '100%',
-                backgroundColor: 'background.default',
               }}
             >
               <Typography variant="h6" color="textSecondary">
@@ -283,10 +236,9 @@ const ContactList = ({ google }) => {
             </Box>
           )}
         </Box>
-
       </Box>
 
-      {/* Modal para Adicionar Novo Contato */}
+      {/* Modal de Adicionar/Editar Contato */}
       <Modal open={openModal} onClose={handleCloseModal}>
         <Box
           sx={{
@@ -302,36 +254,36 @@ const ContactList = ({ google }) => {
           }}
         >
           <Typography variant="h5" mb={2}>
-            Adicionar Novo Contato
+            {isEditing ? 'Editar Contato' : 'Adicionar Novo Contato'}
           </Typography>
           <TextField
             label="Nome"
             fullWidth
-            value={newContact.name}
-            onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
+            value={currentContact?.name || ''}
+            onChange={(e) => setCurrentContact({ ...currentContact, name: e.target.value })}
             sx={{ mb: 2 }}
             required
           />
           <TextField
             label="CPF"
             fullWidth
-            value={newContact.cpf}
-            onChange={(e) => setNewContact({ ...newContact, cpf: e.target.value })}
+            value={currentContact?.cpf || ''}
+            onChange={(e) => setCurrentContact({ ...currentContact, cpf: e.target.value })}
             sx={{ mb: 2 }}
             required
           />
           <TextField
             label="Telefone"
             fullWidth
-            value={newContact.phone}
-            onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
+            value={currentContact?.phone || ''}
+            onChange={(e) => setCurrentContact({ ...currentContact, phone: e.target.value })}
             sx={{ mb: 2 }}
             required
           />
           <TextField
             label="CEP"
             fullWidth
-            value={newContact.cep}
+            value={currentContact?.cep || ''}
             onChange={(e) => handleCEPChange(e.target.value)}
             sx={{ mb: 2 }}
             required
@@ -339,10 +291,9 @@ const ContactList = ({ google }) => {
           <TextField
             label="Endereço"
             fullWidth
-            value={newContact.address}
-            onChange={(e) => setNewContact({ ...newContact, address: e.target.value })}
+            value={currentContact?.address || ''}
             sx={{ mb: 2 }}
-            disabled // Campo desabilitado, preenchido automaticamente
+            disabled
           />
           {cepWarning && (
             <Typography variant="body2" color="error" sx={{ mb: 2 }}>
@@ -358,9 +309,9 @@ const ContactList = ({ google }) => {
             variant="contained"
             color="primary"
             fullWidth
-            onClick={handleAddContact}
+            onClick={handleSaveContact}
           >
-            Salvar Contato
+            {isEditing ? 'Salvar Alterações' : 'Salvar Contato'}
           </Button>
           <Button
             variant="outlined"
