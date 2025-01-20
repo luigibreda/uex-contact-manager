@@ -174,12 +174,16 @@ const ContactList = ({ google }) => {
                     }
                     secondary={
                       <>
-                        <Typography variant="body2" component="span">
+                        <Typography variant="body2" fontSize={12} component="span">
                           <strong>CPF:</strong> {contact.cpf} | <strong>Telefone:</strong> {contact.phone}
                         </Typography>
                         <br />
-                        <Typography variant="body2" component="span">
+                        <Typography variant="body2" fontSize={10} component="span">
                           <strong>Endereço:</strong> {contact.address}
+                        </Typography>
+                        <br />
+                        <Typography variant="body2" fontSize={10} component="span">
+                          <strong>Latitude:</strong> {contact.latitude} <strong>Longitude:</strong> {contact.longitude}
                         </Typography>
                       </>
                     }
