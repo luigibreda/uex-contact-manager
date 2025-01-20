@@ -8,12 +8,13 @@ import { Person } from '@mui/icons-material';
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 
 const ContactList = ({ google }) => {
-  const { contacts, addContact, deleteContact, editContact } = useContact(); // Adicionado updateContact
-  const [search, setSearch] = useState('');
+  const { contacts, addContact, deleteContact, editContact } = useContact();
+  const [searchName, setSearchName] = useState('');
+  const [searchAddress, setSearchAddress] = useState('');
   const [openModal, setOpenModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false); // Controla o estado de edição
+  const [isEditing, setIsEditing] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
-  const [currentContact, setCurrentContact] = useState(null); // Dados do contato em edição
+  const [currentContact, setCurrentContact] = useState(null);
   const [error, setError] = useState('');
   const [cepWarning, setCepWarning] = useState('');
 
@@ -106,7 +107,8 @@ const ContactList = ({ google }) => {
   // Filtrar contatos com base no texto digitado
   const filteredContacts = contacts.filter(
     (contact) =>
-      contact.name.toLowerCase().includes(search.toLowerCase()) || contact.cpf.includes(search)
+      contact.name.toLowerCase().includes(searchName.toLowerCase()) &&
+      contact.address.toLowerCase().includes(searchAddress.toLowerCase())
   );
 
   return (
@@ -136,11 +138,18 @@ const ContactList = ({ google }) => {
             Adicionar Novo Contato
           </Button>
           <TextField
-            label="Pesquisar por Nome ou CPF"
+            label="Pesquisar por Nome"
             fullWidth
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            sx={{ mb: 2 }}
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            sx={{ m: 1, width: "47%" }}
+          />
+          <TextField
+            label="Pesquisar por Endereço"
+            fullWidth
+            value={searchAddress}
+            onChange={(e) => setSearchAddress(e.target.value)}
+            sx={{ m: 1, width: "47%" }}
           />
           {/* Verificar se há contatos encontrados */}
           {filteredContacts.length > 0 ? (
