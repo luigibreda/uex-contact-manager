@@ -154,6 +154,7 @@ const ContactList = ({ google }) => {
                     mb: 1,
                     boxShadow: 1,
                   }}
+                  onClick={() => setSelectedContact(contact)}
                 >
                   <Person sx={{ color: 'primary.main', mr: 2 }} />
                   <ListItemText
@@ -178,14 +179,14 @@ const ContactList = ({ google }) => {
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <Button
                       color="primary"
-                      onClick={() => handleOpenModal(contact)} 
+                      onClick={() => handleOpenModal(contact)}
                       sx={{ minWidth: 'auto', padding: 1 }}
                     >
                       <Edit sx={{ color: 'primary.main' }} />
                     </Button>
                     <Button
                       color="error"
-                      onClick={() => deleteContact(index)} 
+                      onClick={() => deleteContact(index)}
                       sx={{ minWidth: 'auto', padding: 1 }}
                     >
                       <Delete sx={{ color: 'error.main' }} />
